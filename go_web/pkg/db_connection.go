@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func connectDB(dsn string) (*sql.DB, error) {
+func ConnectDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatalf("Error opening database: %v\n", err)
@@ -41,20 +41,4 @@ func createUserTable(db *sql.DB) error {
 
 	fmt.Println("Success create table user")
 	return nil
-}
-
-func main() {
-	db, err := connectDB("root:truong@tcp(localhost:3306)/go_web_example")
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-
-	fmt.Println("Connected to database")
-
-	Err := createUserTable(db)
-	if Err != nil {
-		log.Fatalf("Failed to create user table: %v", Err)
-	}
-
-	defer db.Close()
 }
