@@ -1,15 +1,15 @@
-package usecase
+package usecases
 
 import (
+	"git_truongvudinh/go_web/internal/domain/entity"
 	"testing"
 	"time"
 
-	"git_truongvudinh/go_web/internal/entity"
-	"git_truongvudinh/go_web/internal/repository"
+	"git_truongvudinh/go_web/internal/repositories"
 )
 
 func TestCreateNewUser(t *testing.T) {
-	mockRepo := repository.NewMockUserRepository()
+	mockRepo := repositories.NewMockUserRepository()
 	userService := NewUserService(mockRepo)
 
 	user := &entity.User{

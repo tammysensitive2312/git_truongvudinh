@@ -1,11 +1,11 @@
-package repository
+package repositories
 
 import (
-	"git_truongvudinh/go_web/internal/entity"
+	"git_truongvudinh/go_web/internal/domain/entity"
 )
 
 /*
-initialize a new virtual repository
+initialize a new virtual repositories
 database = map[id:int64]entity:User
 */
 
