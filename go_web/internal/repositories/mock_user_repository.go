@@ -1,26 +1,17 @@
 package repositories
 
 import (
+	"context"
 	"git_truongvudinh/go_web/internal/domain/entity"
+	"github.com/stretchr/testify/mock"
 )
 
-/*
-initialize a new virtual repositories
-database = map[id:int64]entity:User
-*/
-
+// MockUserRepository là một mock của IUserRepository
 type MockUserRepository struct {
-	users map[int64]*entity.User
+	mock.Mock
 }
 
-func NewMockUserRepository() *MockUserRepository {
-	return &MockUserRepository{
-		users: make(map[int64]*entity.User),
-	}
-}
-
-func (m *MockUserRepository) CreateUser(user *entity.User) *entity.User {
-	user.ID = int64(len(m.users) + 1)
-	m.users[user.ID] = user
-	return user
+func (m *MockUserRepository) CreateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+	args := m.Called(ctx, user)
+	return args.Get(0).(*entity.User), args.Error(1)
 }

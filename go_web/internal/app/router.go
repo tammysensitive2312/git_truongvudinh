@@ -15,7 +15,7 @@ func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
 	userGroup := router.Group("/user")
 	{
 		userGroup.POST("/create", userHandler.CreateNewUser)
-		// Bạn có thể thêm các route khác liên quan đến user vào đây
+		userGroup.GET("/get/:id", userHandler.GetUserById)
 	}
 	return router
 }

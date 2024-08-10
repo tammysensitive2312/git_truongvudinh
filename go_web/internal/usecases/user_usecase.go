@@ -7,10 +7,13 @@ import (
 	"git_truongvudinh/go_web/internal/domain/dto"
 	"git_truongvudinh/go_web/internal/domain/entity"
 	"git_truongvudinh/go_web/internal/repositories"
+	"log"
+	"time"
 )
 
 type IUserService interface {
 	CreateNewUser(ctx context.Context, request *dto.CreateUserRequest) (*entity.User, error)
+	GetUserByID(ctx context.Context, ID int64) (*entity.User, error)
 }
 
 type UserService struct {
@@ -27,9 +30,20 @@ func (u UserService) CreateNewUser(ctx context.Context, request *dto.CreateUserR
 	hashPassword := common.HashPassword(request.Password)
 	newUser := request.ToUserEntity()
 	newUser.Password = hashPassword
+	newUser.CreatedAt = time.Now()
+	newUser.UpdatedAt = time.Now()
 	userRsp, err := u.userRepository.CreateUser(ctx, newUser)
 	if err != nil {
 		return nil, err
 	}
 	return userRsp, nil
+}
+
+func (u UserService) GetUserByID(ctx context.Context, ID int64) (*entity.User, error) {
+	user, err := u.userRepository.GetUserById(ctx, ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return user, nil
 }

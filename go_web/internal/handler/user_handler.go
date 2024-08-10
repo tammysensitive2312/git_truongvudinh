@@ -5,6 +5,7 @@ import (
 	"git_truongvudinh/go_web/internal/usecases"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 /*
@@ -61,5 +62,30 @@ func (h *UserHandler) CreateNewUser(ctx *gin.Context) {
 			"created_at": newUser.CreatedAt.Format("2003-12-23 15:04:05"),
 			"updated_at": newUser.UpdatedAt.Format("2003-12-23 15:04:05"),
 		},
+	})
+}
+
+func (h *UserHandler) GetUserById(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	user, err := h.userService.GetUserByID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":         user.ID,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"email":      user.Email,
+		"password":   user.Password,
+		"created_at": user.CreatedAt.Format("2006-01-02 15:04:05"),
+		"updated_at": user.UpdatedAt.Format("2006-01-02 15:04:05"),
 	})
 }
