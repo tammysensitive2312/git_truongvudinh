@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"git_truongvudinh/go_web/internal/domain/entity"
+	"git_truongvudinh/go_web/internal/domain/entities"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ func InitDB(dsn string) (*gorm.DB, error) {
 		logrus.Fatal("failed to connect database")
 	}
 
-	err = db.AutoMigrate(&entity.User{}, &entity.Project{})
+	err = db.AutoMigrate(&entities.User{}, &entities.Project{})
 	if err != nil {
 		logrus.Fatal("failed to migrate database:", err)
 	}

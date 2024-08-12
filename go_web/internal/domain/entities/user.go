@@ -1,4 +1,4 @@
-package entity
+package entities
 
 import (
 	"time"
@@ -13,5 +13,5 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	Projects []Project
+	Projects []Project `gorm:"foreignKey:UserID"`
 }

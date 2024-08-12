@@ -1,7 +1,7 @@
 package app
 
 import (
-	"git_truongvudinh/go_web/internal/handler"
+	"git_truongvudinh/go_web/internal/handlers"
 	"git_truongvudinh/go_web/internal/repositories"
 	"git_truongvudinh/go_web/internal/usecases"
 	dao "git_truongvudinh/go_web/pkg"
@@ -9,18 +9,18 @@ import (
 	"log"
 )
 
-func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
+func SetupRouter(userHandler *handlers.UserHandler) *gin.Engine {
 	router := gin.Default()
 	router.Use(loggingMiddleware())
 	userGroup := router.Group("/user")
 	{
 		userGroup.POST("/create", userHandler.CreateNewUser)
-		userGroup.GET("/get/:id", userHandler.GetUserById)
+		userGroup.GET("/get/:id", userHandler.GetUserByID)
 	}
 	userProjectGroup := router.Group("/user_projects")
 	{
-		userProjectGroup.POST("/create/")
-		userProjectGroup.GET("/:id/")
+		userProjectGroup.POST("/create", userHandler.CreateNewUserWithProject)
+		userProjectGroup.GET("/:id", userHandler.GetUserWithProjects)
 	}
 	return router
 }
@@ -44,7 +44,7 @@ func NewGinEngine() *gin.Engine {
 
 	userRepo := repositories.NewUserRepository(db)
 	userService := usecases.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handlers.NewUserHandler(userService)
 
 	engine = SetupRouter(userHandler)
 	return engine

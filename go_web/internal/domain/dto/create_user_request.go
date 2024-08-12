@@ -1,12 +1,12 @@
 package dto
 
 import (
-	"git_truongvudinh/go_web/internal/domain/entity"
+	"git_truongvudinh/go_web/internal/domain/entities"
 	"time"
 )
 
 type UserCreatable interface {
-	ToUserEntity() *entity.User
+	ToUserEntity() *entities.User
 }
 
 // CreateUserRequest
@@ -27,8 +27,8 @@ type CreateUserRequest struct {
 	Password  string `json:"password" binding:"required,gte=8,lte=32"`
 }
 
-func (req *CreateUserRequest) ToUserEntity() *entity.User {
-	return &entity.User{
+func (req *CreateUserRequest) ToUserEntity() *entities.User {
+	return &entities.User{
 		FirstName: req.Firstname,
 		LastName:  req.Lastname,
 		Email:     req.Email,
@@ -39,8 +39,8 @@ func (req *CreateUserRequest) ToUserEntity() *entity.User {
 type CreateUserProjectRequest struct {
 	Email     string `json:"email" binding:"required,email"`
 	Password  string `json:"password" binding:"required"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
 	Projects  []struct {
 		Name             string     `json:"name" binding:"required"`
 		ProjectStartedAt *time.Time `json:"project_started_at"`
@@ -48,8 +48,8 @@ type CreateUserProjectRequest struct {
 	} `json:"projects" binding:"required"`
 }
 
-func (req *CreateUserProjectRequest) ToUserEntity() *entity.User {
-	user := &entity.User{
+func (req *CreateUserProjectRequest) ToUserEntity() *entities.User {
+	user := &entities.User{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Email:     req.Email,
@@ -67,10 +67,10 @@ func (req *CreateUserProjectRequest) ToUserEntity() *entity.User {
 			endTime = projectReq.ProjectEndedAt
 		}
 
-		project := entity.Project{
+		project := entities.Project{
 			Name:             projectReq.Name,
 			ProjectStartedAt: startTime,
-			ProjectEndedAt:   endTime, // Nếu ProjectEndedAt là nil, endTime sẽ là nil
+			ProjectEndedAt:   endTime,
 		}
 		user.Projects = append(user.Projects, project)
 	}

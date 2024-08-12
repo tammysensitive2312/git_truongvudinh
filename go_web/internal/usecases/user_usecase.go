@@ -4,7 +4,7 @@ import (
 	"context"
 	"git_truongvudinh/go_web/internal/common"
 	"git_truongvudinh/go_web/internal/domain/dto"
-	"git_truongvudinh/go_web/internal/domain/entity"
+	"git_truongvudinh/go_web/internal/domain/entities"
 	"git_truongvudinh/go_web/internal/repositories"
 	"time"
 
@@ -12,15 +12,15 @@ import (
 )
 
 type IUserService interface {
-	Create(ctx context.Context, request dto.UserCreatable) (*entity.User, error)
-	GetUserByID(ctx context.Context, ID int) (*entity.User, error)
+	Create(ctx context.Context, request dto.UserCreatable) (*entities.User, error)
+	GetUserByID(ctx context.Context, ID int, preload bool) (*entities.User, error)
 }
 
 type UserService struct {
 	userRepository repositories.IUserRepository
 }
 
-func (u UserService) Create(ctx context.Context, request dto.UserCreatable) (*entity.User, error) {
+func (u UserService) Create(ctx context.Context, request dto.UserCreatable) (*entities.User, error) {
 	newUser := request.ToUserEntity()
 
 	hashedPassword := common.HashPassword(newUser.Password)
@@ -40,8 +40,8 @@ func (u UserService) Create(ctx context.Context, request dto.UserCreatable) (*en
 	return data, nil
 }
 
-func (u UserService) GetUserByID(ctx context.Context, ID int) (*entity.User, error) {
-	user, err := u.userRepository.GetUserById(ctx, ID)
+func (u UserService) GetUserByID(ctx context.Context, ID int, preload bool) (*entities.User, error) {
+	user, err := u.userRepository.GetUserById(ctx, ID, preload)
 	if err != nil {
 		log.Error("Failed to get user by ID:", err)
 		return nil, err

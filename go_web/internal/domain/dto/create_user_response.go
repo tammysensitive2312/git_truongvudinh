@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"git_truongvudinh/go_web/internal/domain/entity"
+	"git_truongvudinh/go_web/internal/domain/entities"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type CreateUserResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func ToUserResponse(user *entity.User) *CreateUserResponse {
+func ToUserResponse(user *entities.User) *CreateUserResponse {
 	return &CreateUserResponse{
 		ID:        user.ID,
 		FirstName: user.FirstName,
