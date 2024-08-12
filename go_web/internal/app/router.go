@@ -17,6 +17,11 @@ func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
 		userGroup.POST("/create", userHandler.CreateNewUser)
 		userGroup.GET("/get/:id", userHandler.GetUserById)
 	}
+	userProjectGroup := router.Group("/user_projects")
+	{
+		userProjectGroup.POST("/create/")
+		userProjectGroup.GET("/:id/")
+	}
 	return router
 }
 
@@ -31,8 +36,8 @@ func loggingMiddleware() gin.HandlerFunc {
 func NewGinEngine() *gin.Engine {
 	engine := gin.Default()
 
-	dsn := "root:truong@tcp(localhost:3306)/go_web_example"
-	db, err := dao.ConnectDB(dsn)
+	dsn := "root:truong@tcp(localhost:3306)/go_web_example?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := dao.InitDB(dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

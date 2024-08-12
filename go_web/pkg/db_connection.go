@@ -1,44 +1,26 @@
 package dao
 
 import (
-	"database/sql"
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"log"
+	"git_truongvudinh/go_web/internal/domain/entity"
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-func ConnectDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
+func InitDB(dsn string) (*gorm.DB, error) {
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetLevel(logrus.InfoLevel)
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Error opening database: %v\n", err)
+		logrus.Fatal("failed to connect database")
 	}
 
-	err = db.Ping()
+	err = db.AutoMigrate(&entity.User{}, &entity.Project{})
 	if err != nil {
-		log.Fatalf("Error pinging database: %v\n", err)
+		logrus.Fatal("failed to migrate database:", err)
 	}
 
-	return db, nil
-}
-
-func createUserTable(db *sql.DB) error {
-	query := `
-	CREATE TABLE IF NOT EXISTS users (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		firstname VARCHAR(50) NOT NULL UNIQUE,
-	    lastname VARCHAR(50) NOT NULL UNIQUE,
-		email VARCHAR(100) NOT NULL UNIQUE,
-		password VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	)`
-
-	_, err := db.Exec(query)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Success create table user")
-	return nil
+	logrus.Info("Database migrated successfully")
+	return db, err
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"git_truongvudinh/go_web/internal/domain/dto"
 	"git_truongvudinh/go_web/internal/usecases"
 	"github.com/gin-gonic/gin"
@@ -37,15 +38,15 @@ func NewUserHandler(userService usecases.IUserService) *UserHandler {
 }
 
 func (h *UserHandler) CreateNewUser(ctx *gin.Context) {
-	var request dto.CreateUserRequest
+	var request dto.CreateUserProjectRequest
 
 	if err := ctx.BindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid request payload: %v", err)})
 		return
 	}
 
 	// 500
-	newUser, err := h.userService.CreateNewUser(ctx, &request)
+	newUser, err := h.userService.Create(ctx, &request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "details": err.Error()})
 		return
@@ -67,7 +68,7 @@ func (h *UserHandler) CreateNewUser(ctx *gin.Context) {
 
 func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	idParam := ctx.Param("id")
-	id, err := strconv.ParseInt(idParam, 10, 64)
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return

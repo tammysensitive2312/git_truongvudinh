@@ -2,72 +2,43 @@ package repositories
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"git_truongvudinh/go_web/internal/domain/entity"
-	"time"
+	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
 	CreateUser(ctx context.Context, user *entity.User) (*entity.User, error)
-	GetUserById(ctx context.Context, ID int64) (*entity.User, error)
+	GetUserById(ctx context.Context, ID int) (*entity.User, error)
 }
 
 type UserRepository struct {
-	db *sql.DB
-}
-
-// NewUserRepository constructor
-func NewUserRepository(db *sql.DB) IUserRepository {
-	return &UserRepository{db: db}
-}
-
-func (u UserRepository) GetUserById(ctx context.Context, ID int64) (*entity.User, error) {
-	query := `SELECT id, firstname, lastname, email, password, created_at, updated_at FROM users WHERE id = ?`
-	row := u.db.QueryRowContext(ctx, query, ID)
-
-	// Tạo một biến User để lưu kết quả
-	var user entity.User
-	var createdAtStr, updatedAtStr string
-
-	// Scan dữ liệu từ hàng trả về vào struct User
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &createdAtStr, &updatedAtStr)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("user with ID %d not found", ID)
-		}
-		return nil, fmt.Errorf("error querying user: %v", err)
-	}
-
-	// Chuyển đổi từ chuỗi sang time.Time
-	user.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing created_at: %v", err)
-	}
-
-	user.UpdatedAt, err = time.Parse("2006-01-02 15:04:05", updatedAtStr)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing updated_at: %v", err)
-	}
-
-	return &user, nil
+	base
 }
 
 func (u UserRepository) CreateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
-	query := `INSERT INTO users (firstname, lastname, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`
-
-	// Sử dụng ExecContext thay vì Exec
-	result, err := u.db.ExecContext(ctx, query, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt, user.UpdatedAt)
-	if err != nil {
-		return nil, fmt.Errorf("failed to insert user: %w", err)
+	if err := u.db.WithContext(ctx).Create(user).Error; err != nil {
+		log.Error("Cannot create user with err:", err.Error())
+		return nil, err
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get last insert ID: %w", err)
-	}
-
-	user.ID = id
 	return user, nil
+}
+
+func (u UserRepository) GetUserById(ctx context.Context, ID int) (*entity.User, error) {
+	var user entity.User
+	if err := u.db.WithContext(ctx).First(&user, ID).Error; err != nil {
+		log.Error("Can not find user with ID: ", ID, err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("user %v not found", user)
+		}
+		return nil, fmt.Errorf("error retrieving user: %w", err)
+	}
+	return &user, nil
+}
+
+// NewUserRepository constructor
+func NewUserRepository(db *gorm.DB) IUserRepository {
+	return &UserRepository{base: base{db: db}}
 }
