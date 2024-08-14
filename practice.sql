@@ -8,7 +8,7 @@ SELECT
 FROM categories
          LEFT JOIN
      items ON categories.id = items.category_id
-GROUP BY categories.id, categories.name, categories.description, categories.created_at, categories.updated_at;
+GROUP BY categories.id;
 
 
 SELECT
@@ -21,10 +21,10 @@ SELECT
 FROM categories
          LEFT JOIN
      items ON categories.id = items.category_id
-GROUP BY categories.id, categories.name, categories.description, categories.created_at, categories.updated_at;
+GROUP BY categories.id;
 
 
-SELECT
+SELECT DISTINCT
     categories.id,
     categories.name,
     categories.description,
@@ -34,7 +34,7 @@ FROM categories
          LEFT JOIN
      items ON categories.id = items.category_id
 WHERE items.amount > 40
-GROUP BY categories.id, categories.name, categories.description, categories.created_at, categories.updated_at;
+GROUP BY categories.id;
 
 
 DELETE FROM categories
