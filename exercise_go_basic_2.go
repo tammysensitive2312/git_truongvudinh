@@ -95,13 +95,14 @@ func solve(filename string) {
 	}
 }
 
-func Fib(n int) {
+func Fib(n int) []int {
 	a, b := 0, 1
+	var ans []int
 	for i := 0; i < n; i++ {
-		fmt.Print(a, " ")
+		ans = append(ans, a)
 		a, b = b, a+b
 	}
-	fmt.Println()
+	return ans
 }
 
 func main() {
