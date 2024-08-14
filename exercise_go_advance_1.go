@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"time"
 	"unicode"
@@ -22,6 +23,10 @@ type PersonInterface interface {
 	setPhone(s string) error
 }
 
+func NewPerson() PersonInterface {
+	return &Person{}
+}
+
 func (p *Person) setName(s string) error {
 	if s == "" {
 		return errors.New("name is empty")
@@ -29,7 +34,7 @@ func (p *Person) setName(s string) error {
 	if !unicode.IsUpper(rune(s[0])) {
 		return errors.New("name is not a valid format")
 	}
-	(*p).name = s
+	p.name = s
 	return nil
 }
 
@@ -38,8 +43,8 @@ func (p *Person) setBirthdayYear(i int) error {
 	if i < 1900 || i > currentYear {
 		return errors.New("invalid value")
 	}
-	(*p).age = currentYear - i
-	(*p).birthdayYear = i
+	p.age = currentYear - i
+	p.birthdayYear = i
 	return nil
 }
 
@@ -48,7 +53,7 @@ func (p *Person) setEmail(s string) error {
 	if !emailRegex.MatchString(s) {
 		return errors.New("email is not a valid format")
 	}
-	(*p).email = s
+	p.email = s
 	return nil
 }
 
@@ -72,5 +77,11 @@ func (p *Person) setPhone(s string) error {
 }
 
 func main() {
+	person := NewPerson()
+	_ = person.setName("Truong")
+	_ = person.setEmail("truong@gmail.com")
+	_ = person.setPhone("t528357408273")
+	_ = person.setBirthdayYear(2003)
 
+	fmt.Print(person)
 }
